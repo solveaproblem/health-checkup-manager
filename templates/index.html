@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>건강검진 이력 관리</title>
+  <style>
+    :root {
+      --bg: #f4f6f9; --card: #ffffff; --primary: #1a3a5c; --accent: #2e7ab5;
+      --danger: #e05252; --warn: #e09c2a; --ok: #3aaa6e; --border: #dde3ec;
+      --text: #1e2533; --muted: #6b7a99; --radius: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Malgun Gothic', sans-serif; background: var(--bg); color: var(--text); }
+    header { background: var(--primary); color: white; padding: 16px 32px; display: flex; align-items: center; gap: 12px; }
+    header h1 { font-size: 1.2rem; font-weight: 700; }
+    nav { display: flex; justify-content: space-between; align-items: center; gap: 4px; padding: 12px 32px; background: white; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    nav button { padding: 8px 18px; border: 1px solid var(--border); background: white; border-radius: 20px; cursor: pointer; font-size: 0.88rem; color: var(--muted); transition: all .15s; }
+    nav button.active, nav button:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    main { max-width: 1000px; margin: 0 auto; padding: 28px 20px; }
+    .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); padding: 24px; margin-bottom: 20px; }
+    .card h2 { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 16px; }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; margin-top: 12px; }
+    input, textarea, select { width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; font-family: inherit; }
+    textarea { min-height: 120px; resize: vertical; }
+    .btn { display: inline-block; padding: 10px 22px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 600; background: var(--primary); color: white; margin-top: 14px; transition: opacity .15s; }
+    .btn:hover { opacity: .85; }
+    .btn.secondary { background: white; color: var(--primary); border: 1px solid var(--primary); }
+    .tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
+    .tag.ok { background: #e6f7ee; color: var(--ok); }
+    .tag.warn { background: #fdf3e0; color: var(--warn); }
+    .tag.bad { background: #fde8e8; color: var(--danger); }
+    .tag.none { background: #eee; color: var(--muted); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th { background: var(--primary); color: white; padding: 10px 12px; text-align: left; }
+    td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+    tr:hover td { background: #eef4ff; }
+    .msg { padding: 12px 16px; border-radius: 6px; margin-top: 12px; font-size: 0.88rem; }
+    .msg.ok { background: #e6f7ee; color: #256a47; }
+    .msg.err { background: #fde8e8; color: #8b2020; }
+    .followup-item { padding: 12px; border-left: 3px solid var(--warn); background: #fdf8f0; border-radius: 0 6px 6px 0; margin-bottom: 8px; }
+    .followup-item .year-badge { font-size: 0.78rem; font-weight: 700; color: var(--warn); margin-bottom: 4px; }
+    .tradeoff { background: #fdf8f0; border-left: 3px solid var(--warn); padding: 12px; border-radius: 0 6px 6px 0; margin-top: 12px; font-size: 0.88rem; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .hidden { display: none; }
+    .rec-type-btn {
+      padding: 7px 16px; border: 1.5px solid var(--border); background: white;
+      border-radius: 20px; cursor: pointer; font-size: 0.85rem; color: var(--muted);
+      transition: all .15s; font-family: inherit;
+    }
+    .rec-type-btn.selected {
+      background: var(--accent); color: white; border-color: var(--accent); font-weight: 600;
+    }
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid #ccc; border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-left: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #page-compare .year-header { font-weight: 700; color: white; }
+  </style>
+</head>
+<body>
+
+<header>
+  <svg width="24" height="24" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+  <h1>건강검진 이력 관리 시스템</h1>
+</header>
+
+<nav>
+  <div style="display:flex;gap:4px;flex-wrap:wrap;flex:1">
+    <button class="active" onclick="showPage('dashboard')">📊 대시보드</button>
+    <button onclick="showPage('compare')">📈 연도 비교</button>
+    <button onclick="showPage('followup')">⚠️ 추적관찰</button>
+    <button onclick="showPage('recommend')">✨ 검진 추천</button>
+  </div>
+  <div style="display:flex;gap:4px;flex-wrap:wrap">
+    <button onclick="showPage('save')">💾 결과 입력</button>
+    <button onclick="showPage('program')">🏥 프로그램 등록</button>
+    <button onclick="showPage('alias')">🔗 항목 매핑</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- 대시보드 -->
+  <div id="page-dashboard">
+    <div class="card">
+      <h2>📊 검진 이력 요약</h2>
+      <div id="dashboard-content"><p style="color:var(--muted)">불러오는 중...</p></div>
+    </div>
+    <div class="card">
+      <h2>⚠️ 추적관찰 항목 <span id="followup-year-label" style="color:var(--accent);font-weight:700"></span></h2>
+      <div id="dashboard-followup"><p style="color:var(--muted)">불러오는 중...</p></div>
+    </div>
+  </div>
+
+  <!-- 결과 입력 -->
+  <div id="page-save" class="hidden">
+    <div class="card">
+      <h2>💾 검진 결과 입력</h2>
+      <label>연도</label>
+      <input type="number" id="save-year" min="2000" max="2099">
+      <label>병원명</label>
+      <input type="text" id="save-hospital" placeholder="예: 서울내과의원">
+      <label>검진 프로그램명</label>
+      <input type="text" id="save-program" placeholder="예: 종합검진 A">
+      <label>수치 항목 (JSON)</label>
+      <textarea id="save-items" placeholder='{"공복혈당": {"value": 95, "unit": "mg/dL", "ref_range": "70-99", "status": "정상"}}'></textarea>
+      <label>소견 (JSON 배열)</label>
+      <textarea id="save-findings" placeholder='[{"text": "지방간 의심", "follow_up": true, "category": "간"}]'></textarea>
+      <button class="btn" onclick="saveCheckup()">저장</button>
+      <div id="save-msg"></div>
+    </div>
+  </div>
+
+  <!-- 연도 비교 -->
+  <div id="page-compare" class="hidden">
+    <div class="card" id="compare-chart-card" style="display:none">
+      <div id="compare-chart"></div>
+    </div>
+    <div class="card">
+      <h2>📈 연도별 수치 비교</h2>
+      <button class="btn secondary" onclick="loadCompare()">불러오기</button>
+      <div id="compare-content" style="margin-top:16px;overflow-x:auto"></div>
+    </div>
+  </div>
+
+  <!-- 추적관찰 -->
+  <div id="page-followup" class="hidden">
+    <div class="card">
+      <h2>⚠️ 추적관찰 항목 전체</h2>
+      <button class="btn secondary" onclick="loadFollowups()">불러오기</button>
+      <div id="followup-list" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+  <!-- 프로그램 등록 -->
+  <div id="page-program" class="hidden">
+    <div class="card">
+      <h2>🏥 병원/프로그램 등록</h2>
+      <label>연도</label>
+      <input type="number" id="prog-year" min="2000" max="2099">
+      <label>병원 및 프로그램 정보 (JSON)</label>
+      <textarea id="prog-data" style="min-height:200px" placeholder='[{"name":"강남검진센터","programs":[{"name":"기본검진","price":150000,"items":[],"optional_items":{},"notes":""}]}]'></textarea>
+      <button class="btn" onclick="saveProgram()">저장</button>
+      <div id="prog-msg"></div>
+    </div>
+  </div>
+
+  <!-- 추천 -->
+  <div id="page-recommend" class="hidden">
+    <div class="card">
+      <h2>✨ 검진 프로그램 추천</h2>
+      <div class="grid2">
+        <div>
+          <label>추천 연도</label>
+          <input type="number" id="rec-year" min="2000" max="2099">
+        </div>
+      </div>
+      <label>검진 프로그램 분류 선택 <span style="color:var(--muted);font-weight:normal">(선택 안 하면 전체 대상)</span></label>
+      <div id="rec-type-btns" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">
+        <button type="button" class="rec-type-btn" data-type="종합검진" onclick="toggleType(this)">종합검진</button>
+        <button type="button" class="rec-type-btn" data-type="암특화" onclick="toggleType(this)">암특화</button>
+        <button type="button" class="rec-type-btn" data-type="순환기특화" onclick="toggleType(this)">순환기특화</button>
+        <button type="button" class="rec-type-btn" data-type="뇌신경특화" onclick="toggleType(this)">뇌신경특화</button>
+        <button type="button" class="rec-type-btn" data-type="소화기특화" onclick="toggleType(this)">소화기특화</button>
+        <button type="button" class="rec-type-btn" data-type="호흡기특화" onclick="toggleType(this)">호흡기특화</button>
+        <button type="button" class="rec-type-btn" data-type="남성특화" onclick="toggleType(this)">남성특화</button>
+        <button type="button" class="rec-type-btn" data-type="여성특화" onclick="toggleType(this)">여성특화</button>
+        <button type="button" class="rec-type-btn" data-type="척추특화" onclick="toggleType(this)">척추특화</button>
+      </div>
+      <label style="margin-top:14px">꼭 포함되었으면 하는 검진 항목 <span style="color:var(--muted);font-weight:normal">(쉼표 구분 · 예: 대장내시경, 비타민D)</span></label>
+      <input type="text" id="rec-notes" placeholder="예: 대장내시경, 골밀도, 비타민D">
+      <button class="btn" id="rec-btn" onclick="getRecommendation()">추천받기</button>
+      <div id="rec-result" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+  <!-- 항목 매핑 -->
+  <div id="page-alias" class="hidden">
+    <div class="card">
+      <h2>🔗 항목 별칭 매핑</h2>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:12px">병원마다 다른 항목명을 표준 키로 통일합니다.</p>
+      <div class="grid2">
+        <div>
+          <label>병원 표기 항목명</label>
+          <input type="text" id="alias-raw" placeholder="예: 혈당(공복)">
+        </div>
+        <div>
+          <label>표준 키</label>
+          <input type="text" id="alias-key" placeholder="예: fasting_glucose">
+        </div>
+      </div>
+      <button class="btn" onclick="saveAlias()">매핑 추가</button>
+      <div id="alias-msg"></div>
+      <div style="margin-top:20px">
+        <h2>현재 매핑 목록</h2>
+        <button class="btn secondary" onclick="loadAliases()" style="margin-top:8px">불러오기</button>
+        <div id="alias-list" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const pages = ['dashboard','save','compare','followup','program','recommend','alias'];
+let currentPage = 'dashboard';
+
+function clearPage(name) {
+  if (name === 'recommend') {
+    // 대분류 버튼 선택 해제
+    document.querySelectorAll('.rec-type-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('rec-notes').value = '';
+    document.getElementById('rec-result').innerHTML = '';
+    const year = +document.getElementById('rec-year').value;
+    api('/api/request/' + year, 'DELETE').catch(() => {});
+  }
+  if (name === 'save') {
+    document.getElementById('save-hospital').value = '';
+    document.getElementById('save-program').value = '';
+    document.getElementById('save-items').value = '';
+    document.getElementById('save-findings').value = '';
+    document.getElementById('save-msg').className = '';
+    document.getElementById('save-msg').textContent = '';
+  }
+  if (name === 'program') {
+    document.getElementById('prog-data').value = '';
+    document.getElementById('prog-msg').className = '';
+    document.getElementById('prog-msg').textContent = '';
+  }
+  if (name === 'alias') {
+    document.getElementById('alias-raw').value = '';
+    document.getElementById('alias-key').value = '';
+    document.getElementById('alias-msg').className = '';
+    document.getElementById('alias-msg').textContent = '';
+  }
+  if (name === 'compare') {
+    document.getElementById('compare-content').innerHTML = '';
+    document.getElementById('compare-chart-card').style.display = 'none';
+    compareData = null;
+  }
+  if (name === 'followup') document.getElementById('followup-list').innerHTML = '';
+}
+
+function toggleType(btn) {
+  btn.classList.toggle('selected');
+}
+
+function getSelectedTypes() {
+  return [...document.querySelectorAll('.rec-type-btn.selected')].map(b => b.dataset.type);
+}
+
+function showPage(name) {
+  if (currentPage !== name) clearPage(currentPage);
+  currentPage = name;
+  pages.forEach(p => document.getElementById('page-' + p).classList.toggle('hidden', p !== name));
+  document.querySelectorAll('nav button').forEach(btn => {
+    const onclick = btn.getAttribute('onclick') || '';
+    btn.classList.toggle('active', onclick.includes(`'${name}'`));
+  });
+  if (name === 'dashboard') loadDashboard();
+}
+
+function statusTag(status) {
+  if (!status) return '<span class="tag none">미측정</span>';
+  const map = {'정상':'ok','경계':'warn','이상':'bad','알수없음':'none'};
+  return `<span class="tag ${map[status]||'none'}">${status}</span>`;
+}
+
+async function api(url, method='GET', body=null, timeoutMs=0) {
+  const opts = { method, headers: {'Content-Type':'application/json'} };
+  if (timeoutMs > 0) {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), timeoutMs);
+    opts.signal = controller.signal;
+  }
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const r = await fetch(url, opts);
+    const text = await r.text();
+    let data;
+    try { data = JSON.parse(text); } catch { throw new Error('서버 응답 파싱 실패: ' + text.slice(0,100)); }
+    if (!r.ok) throw new Error(data.detail || r.statusText);
+    return data;
+  } catch(e) {
+    if (e.name === 'AbortError') throw new Error('요청 시간 초과');
+    throw e;
+  }
+}
+
+function showMsg(id, text, isErr=false) {
+  const el = document.getElementById(id);
+  el.className = 'msg ' + (isErr ? 'err' : 'ok');
+  el.textContent = text;
+}
+
+// ── 대시보드 ──────────────────────────────────────────
+let dashboardRows = [];
+
+function showFollowupForYear(year) {
+  const fEl = document.getElementById('dashboard-followup');
+  const labelEl = document.getElementById('followup-year-label');
+
+  document.querySelectorAll('#dashboard-content tr[data-year]').forEach(tr => {
+    tr.style.background = tr.dataset.year == year ? '#eef4ff' : 'white';
+    tr.style.cursor = 'pointer';
+  });
+
+  const row = dashboardRows.find(r => r.year === year);
+  if (!row) return;
+
+  labelEl.textContent = `— ${year}년`;
+
+  const followups = row.findings.filter(f => f.follow_up);
+  if (!followups.length) {
+    fEl.innerHTML = '<p style="color:var(--muted)">추적관찰 항목이 없습니다.</p>';
+    return;
+  }
+  fEl.innerHTML = followups.map(f =>
+    `<div class="followup-item"><div class="year-badge">${f.category||'기타'}</div><div>${f.text}</div></div>`
+  ).join('');
+}
+
+async function loadDashboard() {
+  try {
+    const {years} = await api('/api/checkup');
+    const el = document.getElementById('dashboard-content');
+    if (!years.length) {
+      el.innerHTML = '<p style="color:var(--muted)">저장된 검진 결과가 없습니다.</p>';
+      document.getElementById('dashboard-followup').innerHTML = '';
+      return;
+    }
+
+    dashboardRows = await Promise.all(years.map(y => api(`/api/checkup/${y}`)));
+
+    let html = '<table><tr><th>연도</th><th>병원</th><th>이상 항목 수</th><th>추적관찰</th></tr>';
+    dashboardRows.forEach(r => {
+      const abnormal = Object.values(r.items).filter(i => i.status !== '정상').length;
+      const followup = r.findings.filter(f => f.follow_up).length;
+      html += `<tr data-year="${r.year}" onclick="showFollowupForYear(${r.year})" style="cursor:pointer">
+        <td><strong>${r.year}년</strong></td>
+        <td>${r.hospital}</td>
+        <td>${abnormal > 0 ? `<span class="tag bad">${abnormal}개</span>` : '<span class="tag ok">없음</span>'}</td>
+        <td>${followup > 0 ? `<span class="tag warn">${followup}건</span>` : '-'}</td>
+      </tr>`;
+    });
+    html += '</table>';
+    el.innerHTML = html;
+
+    const latestYear = Math.max(...years);
+    showFollowupForYear(latestYear);
+  } catch(e) {
+    document.getElementById('dashboard-content').innerHTML = `<p style="color:var(--danger)">${e.message}</p>`;
+  }
+}
+
+// ── 결과 저장 ──────────────────────────────────────────
+async function saveCheckup() {
+  try {
+    const items = JSON.parse(document.getElementById('save-items').value || '{}');
+    const findings = JSON.parse(document.getElementById('save-findings').value || '[]');
+    await api('/api/checkup', 'POST', {
+      year: +document.getElementById('save-year').value,
+      hospital: document.getElementById('save-hospital').value,
+      program: document.getElementById('save-program').value,
+      items, findings
+    });
+    showMsg('save-msg', '✓ 저장 완료!');
+    document.getElementById('save-hospital').value = '';
+    document.getElementById('save-program').value = '';
+    document.getElementById('save-items').value = '';
+    document.getElementById('save-findings').value = '';
+  } catch(e) { showMsg('save-msg', '오류: ' + e.message, true); }
+}
+
+// ── 연도 비교 ──────────────────────────────────────────
+let compareData = null;
+
+function drawChart(key) {
+  const data = compareData;
+  if (!data) return;
+  const info = data.comparison[key];
+  if (!info) return;
+
+  const chartCard = document.getElementById('compare-chart-card');
+  const chartEl = document.getElementById('compare-chart');
+  chartCard.style.display = 'block';
+  chartCard.scrollIntoView({behavior: 'smooth', block: 'start'});
+
+  const points = data.years
+    .map(y => ({ year: y, ...(info.years[y] || {}) }))
+    .filter(p => p.value !== undefined);
+
+  if (!points.length) {
+    chartEl.innerHTML = '<p style="color:var(--muted)">수치 데이터 없음</p>';
+    return;
+  }
+
+  // 정상 범위: 해당 항목을 가장 최근에 검사한 연도 기준
+  let refMin = null, refMax = null, refYear = null;
+  for (const p of [...points].sort((a,b) => b.year - a.year)) {
+    if (!p.ref_range || p.ref_range === '-') continue;
+    const refRange = p.ref_range;
+    const rangeMatch = refRange.match(/^(-?[\d.]+)[-~](-?[\d.]+)/);
+    const minMatch = refRange.match(/>=?\s*(-?[\d.]+)|(-?[\d.]+)이상/);
+    const maxMatch = refRange.match(/(-?[\d.]+)(?:미만|이하)/);
+    if (rangeMatch) {
+      refMin = parseFloat(rangeMatch[1]);
+      refMax = parseFloat(rangeMatch[2]);
+      if (refMax > 900) refMax = null;
+    } else if (minMatch) {
+      refMin = parseFloat(minMatch[1] || minMatch[2]);
+    } else if (maxMatch) {
+      refMax = parseFloat(maxMatch[1]);
+    }
+    if (refMin !== null || refMax !== null) {
+      refYear = p.year;
+      break;
+    }
+  }
+
+  const values = points.map(p => p.value);
+  const allVals = [...values];
+  if (refMin !== null) allVals.push(refMin);
+  // refMax가 실제 수치보다 너무 크면 (3배 이상) 제외 — 그래프가 너무 납작해짐
+  const dataMax = Math.max(...values);
+  const dataMin = Math.min(...values);
+  if (refMax !== null && refMax <= dataMax * 3 + 30) allVals.push(refMax);
+  const minVal = Math.min(...allVals);
+  const maxVal = Math.max(...allVals);
+  const pad = (maxVal - minVal) * 0.15 || 1;
+  const yMin = minVal - pad, yMax = maxVal + pad;
+
+  const W = 620, H = 260, ml = 60, mr = 100, mt = 20, mb = 40;
+  const gW = W - ml - mr, gH = H - mt - mb;
+  const xScale = i => ml + (data.years.length > 1 ? (i / (data.years.length - 1)) * gW : gW / 2);
+  const yScale = v => mt + gH - ((v - yMin) / (yMax - yMin || 1)) * gH;
+  const statusColor = s => s === '이상' ? '#e05252' : s === '경계' ? '#e09c2a' : '#3aaa6e';
+
+  let refBand = '';
+  if (refMin !== null || refMax !== null) {
+    const bandTop = yScale(refMax !== null ? refMax : yMax);
+    const bandBot = yScale(refMin !== null ? refMin : yMin);
+    const bandH = Math.max(0, bandBot - bandTop);
+    const refLabel = refMin !== null && refMax !== null
+      ? `정상: ${refMin}~${refMax}`
+      : refMin !== null ? `정상: ${refMin} 이상` : `정상: ${refMax} 이하`;
+    refBand = `<rect x="${ml}" y="${bandTop}" width="${gW}" height="${bandH}" fill="#e6f7ee" opacity="0.5"/>
+      <text x="${ml + gW + 6}" y="${bandTop + bandH/2 + 4}" font-size="10" fill="#3aaa6e" font-weight="600">${refLabel}</text>
+      <text x="${ml + gW + 6}" y="${bandTop + bandH/2 + 16}" font-size="9" fill="#3aaa6e">(${refYear}년 기준)</text>`;
+  }
+
+  const linePoints = points.map(p => `${xScale(data.years.indexOf(p.year))},${yScale(p.value)}`).join(' ');
+
+  const dots = points.map(p => {
+    const x = xScale(data.years.indexOf(p.year));
+    const y = yScale(p.value);
+    const col = statusColor(p.status);
+    return `<circle cx="${x}" cy="${y}" r="5" fill="${col}" stroke="white" stroke-width="2"/>
+      <text x="${x}" y="${y - 10}" text-anchor="middle" font-size="11" fill="${col}" font-weight="600">${p.value}</text>`;
+  }).join('');
+
+  const xLabels = data.years.map((y, i) =>
+    `<text x="${xScale(i)}" y="${mt + gH + 20}" text-anchor="middle" font-size="11" fill="#6b7a99">${y}</text>`
+  ).join('');
+
+  const yTicks = Array.from({length: 5}, (_, i) => {
+    const v = yMin + (yMax - yMin) * i / 4;
+    const y = yScale(v);
+    return `<line x1="${ml - 4}" y1="${y}" x2="${ml + gW}" y2="${y}" stroke="#eee"/>
+      <text x="${ml - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#6b7a99">${v.toFixed(1)}</text>`;
+  }).join('');
+
+  const rawName = info.raw_name || key;
+  const korExtract = rawName.match(/[가-힣]+(?:\s*[가-힣]+)*/g);
+  const label = korExtract ? korExtract.join(' ') : rawName;
+  const unit = points[0].unit || '';
+
+  chartEl.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <strong style="font-size:.95rem;color:var(--primary)">${label} 추세</strong>
+      <span style="font-size:.8rem;color:var(--muted)">${unit}</span>
+    </div>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:${W}px;display:block">
+      ${refBand}${yTicks}
+      <line x1="${ml}" y1="${mt}" x2="${ml}" y2="${mt+gH}" stroke="#ccc"/>
+      <line x1="${ml}" y1="${mt+gH}" x2="${ml+gW}" y2="${mt+gH}" stroke="#ccc"/>
+      <polyline points="${linePoints}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>
+      ${dots}${xLabels}
+    </svg>`;
+}
+
+async function loadCompare() {
+  const el = document.getElementById('compare-content');
+  document.getElementById('compare-chart-card').style.display = 'none';
+  try {
+    compareData = await api('/api/compare');
+    if (!compareData.years.length) { el.innerHTML = '<p style="color:var(--muted)">데이터 없음</p>'; return; }
+    let html = `<table><tr><th>항목</th>${compareData.years.map(y=>`<th class="year-header">${y}년</th>`).join('')}</tr>`;
+    for (const [key, info] of Object.entries(compareData.comparison)) {
+      const rawName = info.raw_name || key;
+      const yearMap = info.years;
+      const korExtract = rawName.match(/[가-힣]+(?:\s*[가-힣]+)*/g);
+      const korText = korExtract ? korExtract.join(' ') : null;
+      const engText = rawName.replace(/[（(][^）)]*[）)]/g, '').replace(/[가-힣]/g, '').trim().replace(/\s+/g, ' ');
+      const displayName = (korText && engText)
+        ? `<strong>${engText}</strong> <span style="color:var(--muted);font-size:.78rem;font-weight:normal">(${korText})</span>`
+        : `<strong>${rawName}</strong>`;
+      html += `<tr style="cursor:pointer" onclick="drawChart('${key}')"><td>${displayName}</td>`;
+      compareData.years.forEach(y => {
+        const v = yearMap[y];
+        if (!v) html += `<td>${statusTag(null)}</td>`;
+        else html += `<td>${v.value} ${v.unit} ${statusTag(v.status)}</td>`;
+      });
+      html += '</tr>';
+    }
+    html += '</table>';
+    el.innerHTML = html;
+  } catch(e) { el.innerHTML = `<p style="color:var(--danger)">${e.message}</p>`; }
+}
+
+// ── 추적관찰 ───────────────────────────────────────────
+async function loadFollowups() {
+  const el = document.getElementById('followup-list');
+  try {
+    const {followups} = await api('/api/followups');
+    if (!followups.length) { el.innerHTML = '<p style="color:var(--muted)">추적관찰 항목 없음</p>'; return; }
+    el.innerHTML = followups.map(f =>
+      `<div class="followup-item"><div class="year-badge">${f.year}년 · ${f.category||'기타'}</div><div>${f.text}</div></div>`
+    ).join('');
+  } catch(e) { el.innerHTML = `<p style="color:var(--danger)">${e.message}</p>`; }
+}
+
+// ── 프로그램 저장 ──────────────────────────────────────
+async function saveProgram() {
+  try {
+    const hospitals = JSON.parse(document.getElementById('prog-data').value);
+    await api('/api/program', 'POST', {
+      year: +document.getElementById('prog-year').value,
+      hospitals
+    });
+    showMsg('prog-msg', '✓ 저장 완료!');
+    document.getElementById('prog-data').value = '';
+  } catch(e) { showMsg('prog-msg', '오류: ' + e.message, true); }
+}
+
+// ── 추천 ──────────────────────────────────────────────
+async function getRecommendation() {
+  const btn = document.getElementById('rec-btn');
+  const el = document.getElementById('rec-result');
+
+  btn.disabled = true;
+  btn.textContent = '분석 중...';
+
+  el.innerHTML = `
+    <div id="rec-progress" style="padding:20px 0">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="spinner"></div>
+        <span id="rec-status-text" style="font-size:.9rem;color:var(--muted)">분석 준비 중...</span>
+      </div>
+      <div style="background:#eee;border-radius:6px;height:8px;overflow:hidden">
+        <div id="rec-progress-bar" style="height:100%;width:0%;background:var(--accent);transition:width .4s ease;border-radius:6px"></div>
+      </div>
+      <div id="rec-progress-detail" style="font-size:.78rem;color:var(--muted);margin-top:8px"></div>
+    </div>`;
+
+  const setProgress = (pct, status, detail='') => {
+    const bar = document.getElementById('rec-progress-bar');
+    const txt = document.getElementById('rec-status-text');
+    const det = document.getElementById('rec-progress-detail');
+    if (bar) bar.style.width = pct + '%';
+    if (txt) txt.textContent = status;
+    if (det) det.textContent = detail;
+  };
+
+  let r;
+  try {
+    const year = +document.getElementById('rec-year').value;
+    const requests = getSelectedTypes();
+    const mustHave = document.getElementById('rec-notes').value.split(',').map(s=>s.trim()).filter(Boolean);
+
+    setProgress(10, '요청 항목 저장 중...');
+    if (requests.length || mustHave.length) {
+      await api('/api/request', 'POST', {year, requests, must_have: mustHave});
+    }
+
+    setProgress(25, '과거 검진 이력 분석 중...');
+    await new Promise(res => setTimeout(res, 50));
+    setProgress(40, '병원·프로그램 조합 계산 중...', '선택 항목 조합을 모두 탐색합니다. 잠시 기다려주세요.');
+    await new Promise(res => setTimeout(res, 50));
+
+    const fetchPromise = api('/api/recommend/' + year);
+
+    let fakePct = 40;
+    const fakeTimer = setInterval(() => {
+      fakePct = Math.min(fakePct + 2, 90);
+      setProgress(fakePct, '병원·프로그램 조합 계산 중...', '선택 항목 조합을 모두 탐색합니다. 잠시 기다려주세요.');
+    }, 800);
+
+    r = await fetchPromise;
+    clearInterval(fakeTimer);
+
+    api('/api/request/' + year, 'DELETE').catch(() => {});
+
+    setProgress(100, '분석 완료!');
+    await new Promise(res => setTimeout(res, 300));
+
+  } catch(e) {
+    el.innerHTML = '<p style="color:var(--danger)">오류: ' + e.message + '</p>';
+    btn.disabled = false;
+    btn.textContent = '추천받기';
+    return;
+  }
+
+  btn.disabled = false;
+  btn.textContent = '추천받기';
+
+  if (r.error) {
+    el.innerHTML = `
+      <div class="tradeoff">
+        <strong>⚠️ ${r.error}</strong>
+        ${r.tip ? `<span style="font-size:.85rem;margin-top:6px;display:block">${r.tip}</span>` : ''}
+      </div>`;
+    return;
+  }
+
+  const programs = r.top_programs || [];
+  const isTie = r.is_tie;
+  let html = '';
+
+  if (r.has_area || r.has_must) {
+    const parts = [];
+    if (r.has_area) parts.push(`프로그램 분류: <strong>${r.area_keywords.join(', ')}</strong>`);
+    if (r.has_must) parts.push(`필수 항목: <strong>${r.must_have_keywords.join(', ')}</strong>`);
+    html += `<div style="margin-bottom:14px;padding:12px 16px;background:#f0f6ff;border-radius:8px;font-size:.88rem">
+      🎯 ${parts.join(' &nbsp;·&nbsp; ')} 조건을 반영했습니다.
+      <span style="color:var(--muted);font-size:.78rem;display:block;margin-top:4px">
+        총 ${r.total_combos_checked?.toLocaleString()}가지 조합 분석 · ${r.elapsed_seconds}초 소요
+      </span>
+    </div>`;
+  } else {
+    html += `<div style="margin-bottom:14px;padding:12px 16px;background:#f0f6ff;border-radius:8px;font-size:.88rem">
+      <strong>📋 과거 이상 소견 ${r.needed_count}개 항목 기준으로 분석했습니다.</strong>
+      <span style="color:var(--muted);font-size:.78rem;display:block;margin-top:4px">
+        총 ${r.total_combos_checked?.toLocaleString()}가지 조합 분석 · ${r.elapsed_seconds}초 소요
+      </span>
+    </div>`;
+  }
+
+  if (isTie) {
+    html += `<div style="padding:10px 14px;background:#fdf8f0;border-left:3px solid var(--warn);border-radius:0 6px 6px 0;margin-bottom:12px;font-size:.85rem">
+      아래 ${programs.length}개 프로그램이 동일한 점수입니다. 큰 차이가 없으므로 위치·예약 가능 여부·선호 병원에 따라 선택하세요.
+    </div>`;
+  }
+
+  programs.forEach((p, i) => {
+    const isTop = i === 0 && !isTie;
+    const coveredItems = p.covered || [];
+    const notCoveredItems = p.not_covered || [];
+    const optSelected = p.selected_by_group || {};
+    const hasOptional = Object.keys(optSelected).length > 0;
+
+    const progMatch = p.program.match(/^(.*?)\s*(\([^)]+\))\s*$/);
+    const progCore = progMatch ? progMatch[1].trim() : p.program;
+    const progParen = progMatch ? progMatch[2] : '';
+
+    html += `
+      <div style="border:${isTop ? '2px solid var(--accent)' : '1px solid var(--border)'};border-radius:10px;padding:18px;margin-bottom:12px;background:${isTop ? '#f8fbff' : 'white'}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+          <div>
+            ${isTop ? '<span style="font-size:.75rem;background:var(--accent);color:white;padding:2px 8px;border-radius:10px;margin-right:6px;vertical-align:middle">최적 추천</span>' : ''}
+            <strong style="font-size:1rem">${p.hospital}</strong>
+            <span style="color:var(--muted);font-size:.88rem;font-weight:normal;margin-left:4px">${progParen}</span>
+            ${progCore ? `<span style="font-size:1rem;font-weight:700;color:var(--accent);margin-left:4px">/ ${progCore}</span>` : ''}
+          </div>
+          <span style="color:var(--muted);font-size:.8rem">${p.price?.toLocaleString()}원</span>
+        </div>
+
+        ${hasOptional ? `
+          <div style="font-size:.82rem;color:var(--accent);padding:8px 12px;background:#f0f6ff;border-radius:6px;margin-bottom:10px">
+            💡 선택 추가 항목:
+            ${Object.entries(optSelected).map(([grp, info]) =>
+              `<span style="margin-left:4px"><strong>그룹${grp}(${info.count})</strong> → ${info.items.join(', ')}</span>`
+            ).join(' &nbsp;|&nbsp; ')}
+          </div>` : ''}
+
+        ${coveredItems.length ? `
+          <div style="margin-bottom:8px">
+            <div style="font-size:.78rem;color:var(--muted);margin-bottom:4px">✅ 커버되는 항목 (${coveredItems.length}개)</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px">
+              ${coveredItems.map(c => `<span style="font-size:.78rem;padding:2px 8px;background:#e6f7ee;color:#256a47;border-radius:10px">${c.item}</span>`).join('')}
+            </div>
+          </div>` : ''}
+
+        ${notCoveredItems.length ? `
+          <div>
+            <div style="font-size:.78rem;color:var(--muted);margin-bottom:4px">⚠️ 미포함 항목 (${notCoveredItems.length}개)</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px">
+              ${notCoveredItems.map(c => `<span title="${c.detail}" style="font-size:.78rem;padding:2px 8px;background:#fdf3e0;color:#8a5a00;border-radius:10px;cursor:help">${c.item}</span>`).join('')}
+            </div>
+          </div>` : '<div style="font-size:.82rem;color:#256a47">✅ 모든 항목 커버</div>'}
+      </div>`;
+  });
+
+  if (r.never_covered?.length) {
+    html += `<div style="padding:14px;background:#fde8e8;border-radius:8px;margin-top:4px;font-size:.85rem">
+      <strong>🔍 어느 프로그램에도 포함되지 않는 항목</strong>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px">
+        ${r.never_covered.map(n => `<span title="${n.detail}" style="padding:2px 8px;background:white;border-radius:10px;cursor:help">${n.item}</span>`).join('')}
+      </div>
+      <p style="margin-top:8px;color:var(--muted);font-size:.8rem">이 항목들은 별도 단일 검사를 고려해보세요.</p>
+    </div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+// ── 별칭 ──────────────────────────────────────────────
+async function saveAlias() {
+  try {
+    await api('/api/alias', 'POST', {
+      raw_name: document.getElementById('alias-raw').value,
+      standard_key: document.getElementById('alias-key').value,
+    });
+    showMsg('alias-msg', '✓ 매핑 저장!');
+    document.getElementById('alias-raw').value = '';
+    document.getElementById('alias-key').value = '';
+  } catch(e) { showMsg('alias-msg', '오류: ' + e.message, true); }
+}
+
+async function loadAliases() {
+  const el = document.getElementById('alias-list');
+  const data = await api('/api/alias');
+  const entries = Object.entries(data);
+  if (!entries.length) { el.innerHTML = '<p style="color:var(--muted)">매핑 없음</p>'; return; }
+  el.innerHTML = `<table><tr><th>병원 표기명</th><th>표준 키</th></tr>
+    ${entries.map(([k,v])=>`<tr><td>${k}</td><td>${v}</td></tr>`).join('')}</table>`;
+}
+
+// 초기 로드
+loadDashboard();
+const currentYear = new Date().getFullYear();
+document.getElementById('rec-year').value = currentYear;
+document.getElementById('save-year').value = currentYear;
+document.getElementById('prog-year').value = currentYear;
+document.getElementById('rec-notes').value = '';
+document.getElementById('rec-result').innerHTML = '';
+</script>
+</body>
+</html>

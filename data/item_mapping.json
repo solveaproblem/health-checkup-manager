@@ -1,0 +1,664 @@
+{
+  "_readme": "confirmed: 확정 매핑. unconfirmed: 자동 추론 실패 — 검토 필요.",
+  "confirmed": {
+    "weight": [
+      "기초검사/신체계측"
+    ],
+    "waist": [
+      "기초검사/신체계측"
+    ],
+    "systolic_bp": [
+      "기초검사/혈압"
+    ],
+    "diastolic_bp": [
+      "기초검사/혈압"
+    ],
+    "pulse": [
+      "기초검사/EKG(심전도)"
+    ],
+    "wbc": [
+      "혈액질환/WBC"
+    ],
+    "rbc": [
+      "혈액질환/RBC"
+    ],
+    "hemoglobin": [
+      "혈액질환/Hb"
+    ],
+    "hct": [
+      "혈액질환/Hct"
+    ],
+    "platelets": [
+      "혈액질환/Platelet"
+    ],
+    "fe": [
+      "빈혈/Fe"
+    ],
+    "sgot": [
+      "간기능/AST(S-GOT)"
+    ],
+    "sgpt": [
+      "간기능/ALT(S-GPT)"
+    ],
+    "ggt": [
+      "간기능/r-GTP"
+    ],
+    "d_bilirubin": [
+      "간기능/D.Bilirubin"
+    ],
+    "alp": [
+      "간기능/ALP"
+    ],
+    "hba1c": [
+      "당뇨/HbA1c"
+    ],
+    "fasting_glucose": [
+      "당뇨/Glucose"
+    ],
+    "tsh": [
+      "갑상선기능/TSH"
+    ],
+    "ft4": [
+      "갑상선기능/Free T4"
+    ],
+    "uric_acid": [
+      "근골격계/Uric Acid"
+    ],
+    "bone_density_t_score": [
+      "골밀도/골밀도검사_요추",
+      "골밀도/골밀도검사_대퇴"
+    ],
+    "total_cholesterol": [
+      "혈중지질/T.Cholesterol"
+    ],
+    "ldl_cholesterol": [
+      "혈중지질/LDL Cholesterol"
+    ],
+    "triglyceride": [
+      "혈중지질/Triglyceride"
+    ],
+    "hdl_cholesterol": [
+      "혈중지질/HDL Cholesterol"
+    ],
+    "vitamin_d": [
+      "혈액/비타민D"
+    ],
+    "creatinine": [
+      "신장기능/Creatinine"
+    ],
+    "gfr": [
+      "신장기능/GFR"
+    ],
+    "bun": [
+      "신장기능/BUN"
+    ],
+    "crp": [
+      "면역/염증/CRP(정량)"
+    ],
+    "testosterone": [
+      "남성/Testosteron (남성)"
+    ],
+    "ca19_9": [
+      "종양표지자/CA19-9"
+    ],
+    "afp": [
+      "종양표지자/AFP"
+    ],
+    "cea": [
+      "종양표지자/CEA"
+    ],
+    "psa": [
+      "종양표지자/PSA(남성)"
+    ],
+    "visceral_fat": [
+      "CT/복부지방CT",
+      "CT/복부CT"
+    ],
+    "fat_amount_ratio": [
+      "CT/복부지방CT",
+      "CT/복부CT"
+    ]
+  },
+  "unconfirmed": [
+    {
+      "standard_key": "bmi",
+      "raw_name": "체질량지수(BMI)",
+      "confidence": 0.2,
+      "candidates": [
+        {
+          "item": "기초검사/문진",
+          "score": 0.2
+        },
+        {
+          "item": "기초검사/신체계측",
+          "score": 0.2
+        },
+        {
+          "item": "기초검사/체성분검사",
+          "score": 0.2
+        },
+        {
+          "item": "기초검사/시력검사",
+          "score": 0.2
+        },
+        {
+          "item": "기초검사/청력검사",
+          "score": 0.2
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "pdw",
+      "raw_name": "PDW(혈소판분포계수)",
+      "confidence": 0.2,
+      "candidates": [
+        {
+          "item": "혈액질환/WBC",
+          "score": 0.2
+        },
+        {
+          "item": "혈액질환/RBC",
+          "score": 0.2
+        },
+        {
+          "item": "혈액질환/Hb",
+          "score": 0.2
+        },
+        {
+          "item": "혈액질환/Hct",
+          "score": 0.2
+        },
+        {
+          "item": "혈액질환/MCV",
+          "score": 0.2
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "crf",
+      "raw_name": "CRF(심장위험인자)",
+      "confidence": 0.2,
+      "candidates": [
+        {
+          "item": "혈중지질/T.Cholesterol",
+          "score": 0.2
+        },
+        {
+          "item": "혈중지질/HDL Cholesterol",
+          "score": 0.2
+        },
+        {
+          "item": "혈중지질/LDL Cholesterol",
+          "score": 0.2
+        },
+        {
+          "item": "혈중지질/Triglyceride",
+          "score": 0.2
+        },
+        {
+          "item": "순환기/동맥경화검사(PWV)",
+          "score": 0.2
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "visceral_fat",
+      "raw_name": "내장지방(복부CT)",
+      "confidence": 0.2,
+      "candidates": [
+        {
+          "item": "CT/폐CT (저선량)",
+          "score": 0.2
+        },
+        {
+          "item": "CT/뇌CT",
+          "score": 0.2
+        },
+        {
+          "item": "CT/요추CT (허리)",
+          "score": 0.2
+        },
+        {
+          "item": "CT/경추CT (목)",
+          "score": 0.2
+        },
+        {
+          "item": "CT/심장 석회화 CT (비조영)",
+          "score": 0.2
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "fat_amount_ratio",
+      "raw_name": "복부비만율(Fat Amount Ratio)",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "간기능/A/G Ratio",
+          "score": 0.3
+        },
+        {
+          "item": "신장기능/B/C Ratio",
+          "score": 0.3
+        },
+        {
+          "item": "CT/폐CT (저선량)",
+          "score": 0.2
+        },
+        {
+          "item": "CT/뇌CT",
+          "score": 0.2
+        },
+        {
+          "item": "CT/요추CT (허리)",
+          "score": 0.2
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "mcv",
+      "raw_name": "MCV(평균적혈구용적)",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "혈액질환/MCV",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "mchc",
+      "raw_name": "MCHC(혈색소농도)",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "혈액질환/MCHC",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "rdw",
+      "raw_name": "RDW (적혈구분포)",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "혈액질환/RDW",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "neutrophil",
+      "raw_name": "Neutrophil (중성구)",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "혈액질환/Neutrophil",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "tibc",
+      "raw_name": "TIBC(총철결합능력)",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "빈혈/TIBC",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "total_protein",
+      "raw_name": "T.Protein (총단백)",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "소변/Protein",
+          "score": 0.3
+        },
+        {
+          "item": "간기능/Total Protein",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "albumin",
+      "raw_name": "Albumin (알부민)",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "간기능/Albumin",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "homocysteine",
+      "raw_name": "호모시스테인",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "순환기/심장(호모시스테인)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "ldh",
+      "raw_name": "LDH 젖산탈수소효소",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "순환기/심장(LDH)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "egfr",
+      "raw_name": "e-GFR 신사구체여과율",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "신장기능/GFR",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "sodium",
+      "raw_name": "Sodium(Na) 나트륨",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "전해질/Sodium(Na)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "potassium",
+      "raw_name": "Potassium(K) 칼륨",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "전해질/Potassium(K)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "calcium",
+      "raw_name": "Calcium(Ca) 칼슘",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "전해질/Calcium(Ca)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "amylase",
+      "raw_name": "Amylase 아밀라아제",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "췌장/Amylase",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "lipase",
+      "raw_name": "Lipase 리파아제",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "췌장/Lipase",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "lymphocyte_pct",
+      "raw_name": "Lymphocyte 임파구백분율",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "혈액질환/Lymphocyte",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "cyfra21_1",
+      "raw_name": "Cyfra21-1 폐편평상피암",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "혈액/Cyfra21-1(폐암)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "globulin",
+      "raw_name": "Globulin 글로불린",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "간기능/Globulin",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "total_bilirubin",
+      "raw_name": "T.Bilirubin 총빌리루빈",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "소변/Bilirubin",
+          "score": 0.3
+        },
+        {
+          "item": "간기능/T.Bilirubin",
+          "score": 0.3
+        },
+        {
+          "item": "간기능/D.Bilirubin",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "direct_bilirubin",
+      "raw_name": "D.Bilirubin 직접빌리루빈",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "소변/Bilirubin",
+          "score": 0.3
+        },
+        {
+          "item": "간기능/T.Bilirubin",
+          "score": 0.3
+        },
+        {
+          "item": "간기능/D.Bilirubin",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "ast",
+      "raw_name": "SGOT(AST) 혈청GOT",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "간기능/AST(S-GOT)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "alt",
+      "raw_name": "SGPT(ALT) 혈청GPT",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "간기능/ALT(S-GPT)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "hcv_ab",
+      "raw_name": "HCV-Ab C형간염항체",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "간염/HCV Ab",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "hav_ab",
+      "raw_name": "HAV Ab A형간염항체",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "간염/HAV Ab IgG",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "phosphorus",
+      "raw_name": "Phosphorus(p) 무기인",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "전해질/Phosphorus(P)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "hematocrit",
+      "raw_name": "HCT 혈구용적치",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "혈액질환/Hct",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "platelet",
+      "raw_name": "Platelet 혈소판수",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "혈액질환/Platelet",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "ra_factor",
+      "raw_name": "RA Factor 류마티스 인자",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "근골격계/RA factor",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "free_t4",
+      "raw_name": "Free T4 갑상선 Free T4",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "갑상선기능/Free T4",
+          "score": 0.3
+        },
+        {
+          "item": "혈액/갑상선(Free T3)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "stool_occult_blood",
+      "raw_name": "Stool Occult Blood 분변잠혈검사",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "소변/Occult blood",
+          "score": 0.3
+        },
+        {
+          "item": "대변/Occult Blood(잠혈)",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    },
+    {
+      "standard_key": "uibc",
+      "raw_name": "UIBC(불포화철결합능)",
+      "confidence": 0.3,
+      "candidates": [
+        {
+          "item": "빈혈/UIBC",
+          "score": 0.3
+        }
+      ],
+      "note": "자동 매핑 실패 — 수동 확인 후 confirmed에 추가하세요"
+    }
+  ]
+}

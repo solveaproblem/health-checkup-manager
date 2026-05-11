@@ -1,0 +1,18 @@
+# 개인 검진 결과 데이터
+data/checkups/*.json
+
+# 세션 데이터
+data/requests/*.json
+data/.ready
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
